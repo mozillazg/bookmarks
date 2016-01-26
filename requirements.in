@@ -1,0 +1,11 @@
+Flask
+Flask-Admin
+Flask-Bcrypt
+Flask-Cache
+Flask-EnvConfig
+Flask-Login
+Flask-Migrate
+Flask-Script
+Flask-SQLAlchemy
+Flask-WTF
+psycopg2

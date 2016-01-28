@@ -3,6 +3,7 @@ Flask-Admin
 Flask-Bcrypt
 Flask-Cache
 Flask-EnvConfig
+Flask-RESTful
 Flask-Login
 Flask-Migrate
 Flask-Script

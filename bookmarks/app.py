@@ -11,6 +11,8 @@ from .extensions import admin, cache, db
 def create_app(config=None):
     app = Flask(__name__, template_folder='templates')
     app.config.from_pyfile('config.py')
+    env = EnvConfig()
+    env.init_app(app, 'BOOKMARKS_')
     if isinstance(config, dict):
         app.config.update(config)
     elif config:
@@ -30,8 +32,6 @@ def register_exts(app):
     migrate = Migrate()
     migrate.init_app(app, db)
     register_login(app)
-    env = EnvConfig()
-    env.init_app(app, 'BOOKMARKS_')
     if not app.config.get('TESTING'):
         register_admins(app)
 
@@ -55,22 +55,11 @@ def register_admins(app):
 
 def register_login(app):
     pass
-    # from apps.account.auth import load_user
-    # login_manager.login_view = 'account.login'
-    # login_manager.init_app(app)
-    # login_manager.user_loader(load_user)
 
 
 def register_bps(app):
-    pass
-    # from demo.apps.account.views import account
-    # from demo.apps.blog.views import blog
-    # app.register_blueprint(account)
-    # app.register_blueprint(blog)
-    # from demo.apps.api.v1 import bp, API_VERSION
-    # app.register_blueprint(bp, url_prefix='%s/v%s' % ('/api', API_VERSION))
-    # from demo.apps.api import bp
-    # app.register_blueprint(bp, url_prefix='%s' % '/api')
+    from .views import api_bp
+    app.register_blueprint(api_bp, url_prefix='/api/v1')
 
 
 def create_db():

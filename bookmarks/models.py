@@ -1,38 +1,38 @@
 # -*- coding: utf-8 -*-
+import collections
 import datetime
-import uuid
 
 from flask_login import UserMixin
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.sql import func
 
 from bookmarks.extensions import db
 
 utcnow = datetime.datetime.utcnow
 
 
-def gen_uuid():
-    return str(uuid.uuid4())
-
-
 class UUIDPrimaryKeyMixin:
 
     @declared_attr
     def id(cls):
-        return db.Column(UUID(), primary_key=True, default=gen_uuid)
+        return db.Column(
+            UUID(), primary_key=True, server_default=text('gen_random_uuid()')
+        )
 
 
 class TimestampMixin:
 
     @declared_attr
     def created_at(cls):
-        return db.Column(db.DateTime(timezone=True), default=utcnow,
-                         nullable=False)
+        return db.Column(db.DateTime(timezone=True),
+                         server_default=func.now(), nullable=False)
 
     @declared_attr
     def updated_at(cls):
-        return db.Column(db.DateTime(timezone=True), default=utcnow,
-                         onupdate=utcnow, nullable=False)
+        return db.Column(db.DateTime(timezone=True), server_default=func.now(),
+                         onupdate=func.now(), nullable=False)
 
 
 class TagMixin:
@@ -87,6 +87,7 @@ class Category(TagMixin, TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
 class URL(TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
     __tablename__ = 'urls'
 
+    title = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(1200), nullable=False)
     note = db.Column(db.String(200), default='', nullable=False)
     starred = db.Column(db.Boolean(), default=False, nullable=False)
@@ -97,3 +98,52 @@ class URL(TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
 
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__.__name__, self.url)
+
+    @classmethod
+    def new_url(cls, tags_str='', categories_str='', **kwargs):
+        instance = cls(**kwargs)
+
+        tags, categories = cls.new_tags_categories(tags_str, categories_str)
+        for tag in tags:
+            db.session.add(tag)
+        instance.tags = tags
+        instance.categories = categories
+        db.session.add(instance)
+        return instance
+
+    def update_url(self, tags_str=None, categories_str=None, **kwargs):
+        for field in ('title', 'url', 'note', 'starred'):
+            value = kwargs.get(field)
+            if value is not None:
+                setattr(self, field, value)
+
+        tags, categories = self.new_tags_categories(tags_str or '',
+                                                    categories_str or '')
+
+        for tag in tags:
+            db.session.add(tag)
+        if tags_str is not None:
+            self.tags = tags
+        if categories_str is not None:
+            self.categories = categories
+        db.session.add(self)
+        return self
+
+    @classmethod
+    def new_tags_categories(cls, tags_str, categories_str):
+        tags = []
+        categories = []
+        for tg in (x.strip() for x in tags_str.split(',') if x.strip()):
+            tag = Tag.query.filter_by(name=tg).first()
+            if tag is None:
+                tag = Tag(name=tg)
+            tags.append(tag)
+
+        for cy in (x.strip() for x in categories_str.split(',') if x.strip()):
+            category = Category.query.filter_by(name=cy).first()
+            if category is not None:
+                categories.append(category)
+
+        return collections.namedtuple(
+            'TagsCategories', 'tags, categories'
+        )(tags, categories)

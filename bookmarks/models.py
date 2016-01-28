@@ -32,7 +32,7 @@ class TimestampMixin:
     @declared_attr
     def updated_at(cls):
         return db.Column(db.DateTime(timezone=True), server_default=func.now(),
-                         onupdate=func.now(), nullable=False)
+                         server_onupdate=func.now(), nullable=False)
 
 
 class TagMixin:
@@ -88,7 +88,7 @@ class URL(TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
     __tablename__ = 'urls'
 
     title = db.Column(db.String(100), nullable=False)
-    url = db.Column(db.String(1200), nullable=False)
+    url = db.Column(db.String(1200), nullable=False, unique=True)
     note = db.Column(db.String(200), default='', nullable=False)
     starred = db.Column(db.Boolean(), default=False, nullable=False)
     tags = db.relationship('Tag', secondary=tags_urls,

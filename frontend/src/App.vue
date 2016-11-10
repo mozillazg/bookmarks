@@ -1,22 +1,16 @@
 <template>
-  <div id="app">
+  <div>
     <nav class="nav has-shadow">
       <div class="container">
         <div class="nav-left">
-          <a class="nav-item is-tab is-active">Card</a>
-          <a class="nav-item is-tab">Level</a>
-          <a class="nav-item is-tab">Media object</a>
-          <a class="nav-item is-tab">Menu</a>
-          <a class="nav-item is-tab">Message</a>
-          <a class="nav-item is-tab">Modal</a>
-          <a class="nav-item is-tab">Nav</a>
-          <a class="nav-item is-tab">Pagination</a>
-          <a class="nav-item is-tab">Panel</a>
-          <a class="nav-item is-tab">Tabs</a>
+          <router-link :to="{name: 'bookmarks'}" class="nav-item is-tab">Bookmarks</router-link>
+          <router-link :to="{name: 'tags'}" class="nav-item is-tab">Tags</router-link>
+          <router-link :to="{name: 'categories'}" class="nav-item is-tab">Categories</router-link>
         </div>
       </div>
     </nav>
 
+    <router-view></router-view>
 
     <footer class="footer">
       <div class="container">
@@ -38,14 +32,6 @@
 </template>
 
 <script>
-import Hello from './components/Hello'
-
 export default {
-  name: 'app',
-  components: {
-    Hello
-  }
 }
 </script>
-
-<style></style>

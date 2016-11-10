@@ -50,7 +50,7 @@ class TagMixin:
         return db.Column(db.Integer, default=0, nullable=False)
 
     def __repr__(self):
-        return '<{}: {}>'.format(self.__class__.__name__, self.name)
+        return u'<{}: {}>'.format(self.__class__.__name__, self.name)
 
 
 class User(UserMixin, TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
@@ -61,7 +61,7 @@ class User(UserMixin, TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
     password = db.Column(db.String(200), default='', nullable=False)
 
     def __repr__(self):
-        return '<{}: {}>'.format(self.__class__.__name__, self.username)
+        return u'<{}: {}>'.format(self.__class__.__name__, self.username)
 
 
 tags_urls = db.Table(
@@ -97,7 +97,7 @@ class URL(TimestampMixin, UUIDPrimaryKeyMixin, db.Model):
                                  backref=db.backref('urls', lazy='dynamic'))
 
     def __repr__(self):
-        return '<{}: {}>'.format(self.__class__.__name__, self.url)
+        return u'<{}: {}>'.format(self.__class__.__name__, self.url)
 
     @classmethod
     def new_url(cls, tags_str='', categories_str='', **kwargs):

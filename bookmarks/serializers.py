@@ -20,6 +20,7 @@ url_fields = {
     'id': fields.String,
     'title': fields.String,
     'url': fields.String,
+    'note': fields.String,
     'starred': fields.Boolean,
     'tags': fields.Nested(tag_fields, default={}),
     'categories': fields.Nested(category_fields, default={}),

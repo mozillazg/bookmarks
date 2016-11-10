@@ -5,16 +5,16 @@ import Resource from 'vue-resource'
 import App from './App.vue'
 import Categories from './components/Categories.vue'
 import Tags from './components/Tags.vue'
-import Bookmarks from './components/Bookmarks.vue'
+import URLs from './components/URLs.vue'
 
 Vue.use(Router)
 Vue.use(Resource)
 
 const routes = [
-  {path: '/bookmarks', name: 'bookmarks', component: Bookmarks},
+  {path: '/urls', name: 'urls', component: URLs},
   {path: '/tags', name: 'tags', component: Tags},
   {path: '/categories', name: 'categories', component: Categories},
-  {path: '/', redirect: '/bookmarks'}
+  {path: '/', redirect: '/urls'}
 ]
 
 const router = new Router({

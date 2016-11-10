@@ -3,7 +3,7 @@
     <nav class="nav has-shadow">
       <div class="container">
         <div class="nav-left">
-          <router-link :to="{name: 'bookmarks'}" class="nav-item is-tab">Bookmarks</router-link>
+          <router-link :to="{name: 'urls'}" class="nav-item is-tab">URLs</router-link>
           <router-link :to="{name: 'tags'}" class="nav-item is-tab">Tags</router-link>
           <router-link :to="{name: 'categories'}" class="nav-item is-tab">Categories</router-link>
         </div>

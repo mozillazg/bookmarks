@@ -2,7 +2,8 @@
   <section class="section">
     <div class="container">
       <span v-for="tag in tags">
-        <span class="tag is-info">{{ tag.name }}</span>
+        <router-link :to="{name: 'urls', query: {tag: tag.name} }"
+          class="tag is-info">{{ tag.name }}({{ tag.url_number }})</router-link>&nbsp;
       </span>
     </div>
   </section>

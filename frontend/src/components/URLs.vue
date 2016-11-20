@@ -36,7 +36,7 @@
               </span>
             </td>
             <td>{{ bookmark.note }}</td>
-            <td>{{ bookmark.updated_at }}</td>
+            <td><a :href="'/admin/url/edit/?url=%2Fadmin%2Furl%2F&id=' + bookmark.id ">{{ bookmark.updated_at }}</a></td>
           </tr>
         </tbody>
       </table>

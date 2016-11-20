@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
 
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_restful import abort, Api, marshal_with, Resource
 
 from .extensions import db
@@ -10,6 +10,7 @@ from .serializers import (
     tag_fields, category_fields, url_fields,
     url_parser_create, url_parser_update
 )
+from .utils import parse_pagination_args
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
@@ -42,7 +43,13 @@ class CategoryListView(Resource):
 class URLListView(Resource):
     @marshal_with(url_fields)
     def get(self):
-        return URL.query.order_by(URL.updated_at.desc()).all()
+        pagination_args = parse_pagination_args(request.args)
+        items = URL.query.order_by(URL.updated_at.desc()).offset(
+            pagination_args.offset
+        ).limit(
+            pagination_args.per_page
+        ).all()
+        return items
 
     @marshal_with(url_fields)
     def post(self):

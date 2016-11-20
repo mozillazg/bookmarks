@@ -44,7 +44,17 @@ class URLListView(Resource):
     @marshal_with(url_fields)
     def get(self):
         pagination_args = parse_pagination_args(request.args)
-        items = URL.query.order_by(URL.updated_at.desc()).offset(
+        query = []
+        tag = request.args.get('tag', '').strip()
+        if tag:
+            query.append(URL.tags.any(name=tag))
+        category = request.args.get('category', '').strip()
+        if category:
+            query.append(URL.categories.any(name=category))
+
+        items = URL.query.filter(*query).order_by(
+            URL.updated_at.desc()
+        ).offset(
             pagination_args.offset
         ).limit(
             pagination_args.per_page

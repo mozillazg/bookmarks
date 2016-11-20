@@ -59,7 +59,9 @@ export default {
   data: function () {
     return {
       urls: [],
-      page: 1
+      page: 1,
+      tag: this.$route.query.tag || '',
+      category: this.$route.query.category || ''
     }
   },
   created: function () {
@@ -88,7 +90,9 @@ export default {
     },
     getQueryParams: function () {
       return {
-        page: this.currentPage()
+        page: this.currentPage(),
+        tag: this.tag,
+        category: this.category
       }
     }
   }

@@ -1,6 +1,17 @@
 <template>
   <section class="section content">
     <div class="container">
+      <form v-on:submit.prevent="submitSearch">
+        <p class="control has-addons has-addons-centered">
+          <input class="input" type="text" placeholder="Amount of money"
+           v-model="search">
+          <a class="button is-primary"
+           v-on:click.prevent="submitSearch">
+            Search
+          </a>
+        </p>
+      </form>
+
       <nav class="pagination">
         <router-link :to="routeLink('prePage')" class="button">Previous</router-link>
         <router-link :to="routeLink('nextPage')" class="button">Next page</router-link>
@@ -61,11 +72,15 @@ export default {
       urls: [],
       page: 1,
       tag: this.$route.query.tag || '',
-      category: this.$route.query.category || ''
+      category: this.$route.query.category || '',
+      search: this.$route.query.search || ''
     }
   },
   created: function () {
     this.fetchData()
+  },
+  watch: {
+    '$route': 'fetchData'
   },
   methods: {
     fetchData: function () {
@@ -92,8 +107,12 @@ export default {
       return {
         page: this.currentPage(),
         tag: this.tag,
-        category: this.category
+        category: this.category,
+        search: this.search
       }
+    },
+    submitSearch: function () {
+      this.$router.push({name: 'urls', query: this.getQueryParams()})
     }
   }
 }

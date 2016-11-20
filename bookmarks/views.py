@@ -3,6 +3,7 @@ import uuid
 
 from flask import Blueprint, request
 from flask_restful import abort, Api, marshal_with, Resource
+from sqlalchemy import or_
 
 from .extensions import db
 from .models import Tag, Category, URL
@@ -45,6 +46,14 @@ class URLListView(Resource):
     def get(self):
         pagination_args = parse_pagination_args(request.args)
         query = []
+        search = request.args.get('search', '').strip()
+        if search:
+            query.append(
+                or_(URL.title.contains(search),
+                    URL.note.contains(search),
+                    URL.url == search)
+            )
+
         tag = request.args.get('tag', '').strip()
         if tag:
             query.append(URL.tags.any(name=tag))

@@ -1,7 +1,13 @@
 <template>
   <section class="section content">
     <div class="container">
-      <table class="table">
+      <nav class="pagination">
+        <router-link :to="routeLink('prePage')" class="button">Previous</router-link>
+        <router-link :to="routeLink('nextPage')" class="button">Next page</router-link>
+        <ul></ul>
+      </nav>
+
+      <table class="table is-bordered is-striped is-narrow">
         <thead>
           <tr>
             <th>Starred</th>
@@ -34,16 +40,26 @@
           </tr>
         </tbody>
       </table>
+
+      <nav class="pagination">
+        <router-link :to="routeLink('prePage')" class="button">Previous</router-link>
+        <router-link :to="routeLink('nextPage')" class="button">Next page</router-link>
+        <ul></ul>
+      </nav>
     </div>
   </section>
 </template>
 
 <script>
+import pageMixin from '../mixins/page'
+
 export default {
   name: 'URLs',
+  mixins: [pageMixin],
   data: function () {
     return {
-      urls: []
+      urls: [],
+      page: 1
     }
   },
   created: function () {
@@ -54,10 +70,26 @@ export default {
       this.fetch()
     },
     fetch: function () {
+      const query = this.getQueryParams()
       const url = '/api/v1/urls'
-      this.$http.get(url).then((response) => {
+      this.$http.get(url, {params: query}).then((response) => {
         this.urls = response.body
       })
+    },
+    routeLink: function (action) {
+      var query = this.getQueryParams()
+      if (action === 'nextPage') {
+        query.page = this.nextPage()
+        return {name: 'queueErrors', query: query}
+      } else if (action === 'prePage') {
+        query.page = this.prePage()
+        return {name: 'queueErrors', query: query}
+      }
+    },
+    getQueryParams: function () {
+      return {
+        page: this.currentPage()
+      }
     }
   }
 }

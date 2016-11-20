@@ -42,7 +42,7 @@ class CategoryListView(Resource):
 class URLListView(Resource):
     @marshal_with(url_fields)
     def get(self):
-        return URL.query.order_by(URL.created_at).all()
+        return URL.query.order_by(URL.updated_at.desc()).all()
 
     @marshal_with(url_fields)
     def post(self):

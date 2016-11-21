@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import uuid
 
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_restful import abort, Api, marshal_with, Resource
+from sqlalchemy import or_
 
 from .extensions import db
 from .models import Tag, Category, URL
@@ -10,6 +11,7 @@ from .serializers import (
     tag_fields, category_fields, url_fields,
     url_parser_create, url_parser_update
 )
+from .utils import parse_pagination_args
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
@@ -42,7 +44,31 @@ class CategoryListView(Resource):
 class URLListView(Resource):
     @marshal_with(url_fields)
     def get(self):
-        return URL.query.order_by(URL.created_at).all()
+        pagination_args = parse_pagination_args(request.args)
+        query = []
+        search = request.args.get('search', '').strip()
+        if search:
+            query.append(
+                or_(URL.title.contains(search),
+                    URL.note.contains(search),
+                    URL.url == search)
+            )
+
+        tag = request.args.get('tag', '').strip()
+        if tag:
+            query.append(URL.tags.any(name=tag))
+        category = request.args.get('category', '').strip()
+        if category:
+            query.append(URL.categories.any(name=category))
+
+        items = URL.query.filter(*query).order_by(
+            URL.updated_at.desc()
+        ).offset(
+            pagination_args.offset
+        ).limit(
+            pagination_args.per_page
+        ).all()
+        return items
 
     @marshal_with(url_fields)
     def post(self):
